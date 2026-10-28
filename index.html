@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>Aria's Debate Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Zilla+Slab:wght@500;700&display=swap">
+<style>
+/* Layout: one study column. Stats strip, deck controls, a single index card on a desk, then the full library below. */
+:root{
+  --bg:#E7EAEE; --card:#FFFFFF; --fg:#1A2130; --muted:#5A6476; --line:#CDD3DC;
+  --accent:#2B4C8C; --accent-soft:#DCE4F3;
+  --fal:#17756A; --fal-soft:#D7EEEA;
+  --ver:#9A6B14; --ver-soft:#F3E8D2;
+  --good:#2E7D32; --good-soft:#DDF0DE; --bad:#B23A35; --bad-soft:#F6DEDC; --warn:#9A6B14;
+  --shadow:0 1px 2px rgba(20,30,50,.08),0 8px 24px rgba(20,30,50,.08);
+  --f-display:"Zilla Slab",Georgia,serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-verse:"Literata",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151C; --card:#1A2029; --fg:#E5E9F0; --muted:#9AA4B5; --line:#2E3746;
+  --accent:#8EAEEB; --accent-soft:#22304A;
+  --fal:#5EC4B4; --fal-soft:#183631;
+  --ver:#E2B85E; --ver-soft:#3A2F18;
+  --good:#7CCB80; --good-soft:#1C3420; --bad:#F08A84; --bad-soft:#3E1F1E; --warn:#E2B85E;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151C; --card:#1A2029; --fg:#E5E9F0; --muted:#9AA4B5; --line:#2E3746;
+  --accent:#8EAEEB; --accent-soft:#22304A;
+  --fal:#5EC4B4; --fal-soft:#183631;
+  --ver:#E2B85E; --ver-soft:#3A2F18;
+  --good:#7CCB80; --good-soft:#1C3420; --bad:#F08A84; --bad-soft:#3E1F1E; --warn:#E2B85E;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:2.1rem;font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.45rem;font-weight:700}
+h3{font-size:1.15rem;font-weight:700}
+p{margin:0}
+.lede{color:var(--muted);max-width:62ch}
+.label{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat b{font-weight:700;font-size:1.6rem;font-variant-numeric:tabular-nums;line-height:1.1}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* controls */
+.controls{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:7px 14px;border-radius:999px;font-weight:700;font-size:.92rem;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--card)}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font-size:.88rem;color:var(--muted)}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--fg);font-weight:700}
+
+/* study card */
+.stage{display:flex;flex-direction:column;gap:12px}
+.qbar{display:flex;justify-content:space-between;gap:10px;font-size:.88rem;color:var(--muted);flex-wrap:wrap}
+.progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);border-top:6px solid var(--accent);padding:24px 24px 22px;display:flex;flex-direction:column;gap:16px;min-height:260px;position:relative;
+}
+.card.fal{border-top-color:var(--fal)} .card.ver{border-top-color:var(--ver)}
+.kind{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:5px;background:var(--accent-soft);color:var(--fg)}
+.tag.fal{background:var(--fal-soft)} .tag.ver{background:var(--ver-soft)}
+.tag.box{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.prompt{font-size:1.05rem;color:var(--muted)}
+.big{font-family:var(--f-display);font-size:2rem;font-weight:700;line-height:1.15}
+.quote{font-size:1.15rem;line-height:1.6;padding-left:14px;border-left:3px solid var(--fal)}
+.speaker{font-size:.85rem;color:var(--muted);font-weight:700}
+.verse{font-family:var(--f-verse);font-size:1.22rem;line-height:1.7}
+.verse .blank{display:inline-block;min-width:5.5em;border-bottom:2px solid var(--ver);text-align:center;color:var(--ver);font-weight:600}
+.hint{font-family:var(--f-verse);color:var(--muted);letter-spacing:.04em;word-spacing:.25em}
+.back{display:flex;flex-direction:column;gap:12px;border-top:1px dashed var(--line);padding-top:14px}
+.note{font-size:.95rem;color:var(--muted)}
+.note b{color:var(--fg)}
+.tip{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:.95rem}
+.tip b{font-family:var(--f-display)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:10px 16px;font-weight:700}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--card)}
+.btn.miss{border-color:var(--bad);color:var(--bad)}
+.btn.shaky{border-color:var(--warn);color:var(--warn)}
+.btn.knew{background:var(--good);border-color:var(--good);color:var(--card)}
+.btn.link{border:0;background:none;padding:6px 2px;color:var(--accent);text-decoration:underline;font-weight:400}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width:520px){.opts{grid-template-columns:1fr}}
+.opt{text-align:left;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:12px 14px;font-weight:700}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{background:var(--good-soft);border-color:var(--good)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.verdict{font-family:var(--f-display);font-size:1.25rem;font-weight:700}
+.verdict.ok{color:var(--good)} .verdict.no{color:var(--bad)}
+.done{text-align:center;align-items:center;justify-content:center}
+
+/* library */
+.lib{display:flex;flex-direction:column;gap:10px}
+.libhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px}
+summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+summary::-webkit-details-marker{display:none}
+summary .nm{font-weight:700;min-width:0}
+summary .nm small{display:block;font-weight:400;color:var(--muted);font-size:.85rem}
+.dots{display:flex;gap:3px;flex-shrink:0}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--good)}
+.detail{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ex{display:flex;flex-direction:column;gap:2px}
+.ex p{padding-left:10px;border-left:2px solid var(--fal)}
+.group{font-family:var(--f-display);font-size:1.05rem;margin-top:8px;color:var(--muted)}
+footer{font-size:.82rem;color:var(--muted);display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:16px}
+.confirm{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <span class="label">Debate &amp; apologetics training</span>
+    <h1>Aria's Debate Deck</h1>
+    <p class="lede">Learn to spot bad reasoning on every side, including your own, and keep key Scripture ready. A few minutes a day works better than one long cram. Cards you know come back less often; cards you miss come back soon.</p>
+  </header>
+
+  <section class="stats" aria-label="Progress">
+    <div class="stat"><span class="label">Due now</span><b id="sDue">0</b></div>
+    <div class="stat"><span class="label">Learning</span><b id="sLearn">0</b></div>
+    <div class="stat"><span class="label">Mastered</span><b id="sMaster">0</b></div>
+    <div class="stat"><span class="label">Day streak</span><b id="sStreak">0</b></div>
+  </section>
+
+  <section class="controls" aria-label="What to study">
+    <div class="row">
+      <div class="seg" role="group" aria-label="Deck">
+        <button id="dk-all" data-deck="all">Both</button>
+        <button id="dk-fal" data-deck="fallacy">Fallacies</button>
+        <button id="dk-ver" data-deck="verse">Scripture</button>
+      </div>
+      <div class="seg" role="group" aria-label="Mode">
+        <button id="md-flash" data-mode="flash">Flashcards</button>
+        <button id="md-quiz" data-mode="quiz">Quiz</button>
+      </div>
+    </div>
+    <div class="row" id="topics" role="group" aria-label="Topic"></div>
+  </section>
+
+  <section class="stage" aria-live="polite">
+    <div class="qbar"><span id="qinfo"></span><span id="qcount"></span></div>
+    <div class="progress"><i id="qbar"></i></div>
+    <div id="card"></div>
+  </section>
+
+  <section class="lib">
+    <div class="libhead"><h2>Library</h2><span class="note">Green dots show how well you know each card (5 = mastered).</span></div>
+    <div class="seg" role="group" aria-label="Library">
+      <button id="lb-fal" data-lib="fallacy">22 fallacies</button>
+      <button id="lb-ver" data-lib="verse">Scripture</button>
+    </div>
+    <div id="library" class="lib"></div>
+  </section>
+
+  <footer>
+    <p>Scripture quotations are from the ESV® Bible (The Holy Bible, English Standard Version®), © 2001 by Crossway, a publishing ministry of Good News Publishers. Used by permission. All rights reserved.</p>
+    <p>Progress is saved in this browser on this device only.</p>
+    <div id="resetBox"><button class="btn link" id="resetBtn">Reset all progress</button></div>
+  </footer>
+</div>
+
+<script>
+/* ---------- DATA ---------- */
+const TOPICS = [
+  {id:"all", name:"All topics"},
+  {id:"abortion", name:"Abortion"},
+  {id:"slavery", name:"Slavery"},
+  {id:"faith", name:"Faith & reason"},
+  {id:"faiths", name:"Other faiths"},
+  {id:"debate", name:"How to debate"}
+];
+
+// who: the side making the flawed argument. Fallacies show up on every side, including ours.
+const FALLACIES = [
+ {id:"adhom", name:"Ad Hominem", aka:"Attacking the person",
+  def:"Attacking the person making the argument instead of the argument itself.",
+  spot:"The reply is about who someone is, not whether their reasons are good.",
+  answer:"\"Even if that were true about me, what is wrong with the argument?\"",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"You're a man, so your opinion on abortion doesn't count."},
+   {t:"abortion", who:"Pro-life argument", q:"She works at an abortion clinic, so nothing she says about pregnancy can be trusted."},
+   {t:"faith", who:"Christian", q:"Atheists only reject God because they want to sin, so we can ignore their arguments."}
+  ], avoid:["genetic","tuquoque","loaded"]},
+ {id:"strawman", name:"Straw Man", aka:"Twisting the other view",
+  def:"Restating someone's view in a weaker or sillier form, then knocking down that fake version.",
+  spot:"Would the other side say, \"Yes, that is what I believe\"? If not, it may be a straw man.",
+  answer:"Steel-man instead: state their view so fairly that they would agree with your summary, then respond to that.",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"Pro-lifers don't care about babies. They just want to control women."},
+   {t:"abortion", who:"Pro-life argument", q:"Pro-choice people think killing babies is perfectly fine."},
+   {t:"faith", who:"Skeptic", q:"Christians believe an invisible sky-man grants wishes if you ask nicely."}
+  ], avoid:["loaded","hasty"]},
+ {id:"redherring", name:"Red Herring", aka:"Changing the subject",
+  def:"Bringing up a different issue to pull attention away from the question being discussed.",
+  spot:"The new point may be true and important, but it does not answer the question on the table.",
+  answer:"\"That matters, and we can talk about it next. But first, back to the question: ...\"",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"Why argue about abortion when thousands of kids are stuck in foster care?"},
+   {t:"abortion", who:"Pro-life argument", q:"Asked what the law should do in cases of rape, the speaker answers only: \"Well, most abortions aren't because of rape anyway.\""},
+   {t:"slavery", who:"1850s defender of slavery", q:"Northern factory workers are treated worse than our slaves, so the North should mind its own business."}
+  ], avoid:["tuquoque","cherry"]},
+ {id:"tuquoque", name:"Tu Quoque", aka:"\"You do it too\"",
+  def:"Dismissing an argument by pointing out that the speaker or their group is inconsistent or hypocritical.",
+  spot:"Hypocrisy can be real, but it does not make the argument false.",
+  answer:"Admit real failures honestly, then ask: \"Is the claim itself true or false?\"",
+  ex:[
+   {t:"slavery", who:"Skeptic", q:"Christians owned slaves for centuries, so Christianity has no right to call slavery wrong."},
+   {t:"faith", who:"Christian", q:"Atheist governments killed millions, so atheists can't criticize anything the church has done."},
+   {t:"abortion", who:"Pro-choice argument", q:"You eat meat, so you can't lecture anyone about protecting life."}
+  ], avoid:["adhom","redherring","genetic"]},
+ {id:"emotion", name:"Appeal to Emotion", aka:"Feelings instead of reasons",
+  def:"Using strong feelings like pity, fear, or anger to replace evidence and reasons.",
+  spot:"Emotion is fine when it fits true facts. It becomes a fallacy when it is used instead of an argument.",
+  answer:"Acknowledge the feeling with kindness, then ask what the reasons are.",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"Picture a terrified fifteen-year-old forced to give birth. How can anyone be that cruel?"},
+   {t:"abortion", who:"Pro-life argument", q:"A speaker holds up a graphic photo and says, \"Look at this. Debate over.\""},
+   {t:"faith", who:"Christian", q:"If there is no God, then your life means nothing and you'll be miserable, so God must exist."}
+  ], avoid:["slope"]},
+ {id:"authority", name:"Appeal to Authority", aka:"Misplaced expert",
+  def:"Claiming something is true because a famous or respected person said it, when they are not a real expert on that question or give no reasons.",
+  spot:"Is this person an expert in this exact field? Did they show their reasons?",
+  answer:"\"What evidence did they give?\" Real experts can be quoted, but their reasons are what count.",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"A famous actress said abortion is just healthcare, so that settles it."},
+   {t:"slavery", who:"1850s defender of slavery", q:"Many respected Southern ministers defend slavery, so it must be biblical."},
+   {t:"faith", who:"Christian", q:"My favorite worship leader says this verse means that, so that's what it means."}
+  ], avoid:["popularity","tradition"]},
+ {id:"popularity", name:"Bandwagon", aka:"Appeal to popularity",
+  def:"Arguing that something is true or right because many people believe it.",
+  spot:"Majorities have been wrong before. Slavery was once widely accepted.",
+  answer:"\"Lots of people believed in slavery too. What makes this view right?\"",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"Most people support legal abortion early in pregnancy, so it must be morally fine."},
+   {t:"abortion", who:"Pro-life argument", q:"Everyone in our church agrees on this, so we're obviously right."},
+   {t:"faiths", who:"Member of any large religion", q:"Over a billion people follow my religion. That many people can't be wrong."}
+  ], avoid:["authority","tradition"]},
+ {id:"dilemma", name:"False Dilemma", aka:"Only two choices",
+  def:"Presenting only two options when more possibilities exist.",
+  spot:"Listen for \"either... or...\" Ask what a third option would be.",
+  answer:"\"Are those really the only two choices? What about...\"",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"Either abortion stays legal, or women will die in back alleys."},
+   {t:"abortion", who:"Pro-life argument", q:"Either you support every single law I support, or you aren't really pro-life."},
+   {t:"faith", who:"Skeptic or Christian", q:"You have to choose: science or God. You can't have both."}
+  ], avoid:["slope"]},
+ {id:"slope", name:"Slippery Slope", aka:"Unsupported chain reaction",
+  def:"Claiming one step will lead to a chain of extreme results without showing evidence for each link.",
+  spot:"Some slopes are real. It is a fallacy when the chain is just assumed.",
+  answer:"\"Can you show why step one leads to step two, and step two to step three?\"",
+  ex:[
+   {t:"abortion", who:"Pro-life argument", q:"If we allow abortion, next we'll be putting grandparents to death when they get inconvenient."},
+   {t:"abortion", who:"Pro-choice argument", q:"If abortion is restricted, next they'll ban birth control and stop women from working."},
+   {t:"slavery", who:"1850s defender of slavery", q:"If the slaves are freed, all of society will collapse into chaos."}
+  ], avoid:["dilemma","emotion"]},
+ {id:"circular", name:"Circular Reasoning", aka:"Begging the question",
+  def:"Using the conclusion as one of the reasons for the conclusion.",
+  spot:"Take away the conclusion. Is any real reason left?",
+  answer:"\"That assumes what we're trying to figure out. What's the reason underneath it?\"",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"Abortion is fine because a woman has the right to end her pregnancy."},
+   {t:"abortion", who:"Pro-life argument", q:"Abortion is murder, so it's wrong. (Calling it murder already assumes the unborn is a person wrongly killed. That needs its own argument.)"},
+   {t:"faith", who:"Christian", q:"The Bible is true because the Bible says it is God's Word."}
+  ], note:"Christian apologists avoid the circle by giving outside evidence: history, eyewitness testimony, archaeology, and the resurrection.",
+  avoid:["equivocation"]},
+ {id:"hasty", name:"Hasty Generalization", aka:"Too few examples",
+  def:"Drawing a big conclusion from too few or unusual examples.",
+  spot:"How many cases is this based on? Are they typical?",
+  answer:"\"Is that true of most of them, or just the ones you've met?\"",
+  ex:[
+   {t:"abortion", who:"Pro-life argument", q:"The two pro-choice people I argued with were rude, so pro-choice people are just mean."},
+   {t:"faith", who:"Skeptic", q:"My neighbor is a Christian and a total hypocrite, so Christianity is fake."},
+   {t:"faiths", who:"Christian", q:"I watched one video about a violent group, so everyone in that religion must be dangerous."}
+  ], avoid:["strawman","cherry"]},
+ {id:"posthoc", name:"False Cause", aka:"Post hoc",
+  def:"Assuming that because one thing happened after another, the first thing caused it.",
+  spot:"Happening first is not proof of causing. What else could explain it?",
+  answer:"\"Could something else explain both? What evidence shows the cause?\"",
+  ex:[
+   {t:"faith", who:"Christian", q:"Our town built a new church and the crime rate went down, so the church caused it."},
+   {t:"faith", who:"Skeptic", q:"Science grew after Europe became less religious, so religion was holding science back."},
+   {t:"abortion", who:"Either side", q:"The abortion rate dropped after our candidate was elected, so his policies did it."}
+  ], avoid:["hasty"]},
+ {id:"equivocation", name:"Equivocation", aka:"Word switch",
+  def:"Using one word in two different senses within the same argument.",
+  spot:"Does a key word mean the same thing every time it is used?",
+  answer:"Define the word first: \"When you say ___, which meaning do you mean?\"",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"A fetus is just human tissue, like a fingernail clipping. (\"Human tissue\" and \"a whole human organism\" are not the same thing.)"},
+   {t:"faith", who:"Christian", q:"Evolution is just a theory, so it's only a guess. (\"Theory\" in science does not mean \"guess.\")"},
+   {t:"slavery", who:"Skeptic", q:"The Bible mentions slaves, and slavery is evil, so the Bible approves of evil."}
+  ], note:"On slavery, the word covered very different practices across history. Good debaters define the term, then deal honestly with the hardest passages too, such as Leviticus 25:44 to 46.",
+  avoid:["circular","strawman"]},
+ {id:"genetic", name:"Genetic Fallacy", aka:"Judging by origin",
+  def:"Judging a claim true or false based on where it came from, instead of on the evidence.",
+  spot:"How a belief started does not tell you whether it is true now.",
+  answer:"\"Maybe so. But is the claim itself true? Let's look at the evidence.\"",
+  ex:[
+   {t:"faith", who:"Skeptic", q:"You're only a Christian because your parents raised you that way."},
+   {t:"abortion", who:"Pro-life argument", q:"Planned Parenthood's founder supported eugenics, so abortion is wrong."},
+   {t:"faiths", who:"Christian", q:"That religion was started by one man in a desert, so it can't be true."}
+  ], note:"History can still matter. Sanger's views are real and worth knowing. They just can't settle the moral question alone.",
+  avoid:["adhom","tuquoque"]},
+ {id:"nature", name:"Appeal to Nature", aka:"Natural means good",
+  def:"Arguing something is good because it is natural, or bad because it is unnatural.",
+  spot:"Many natural things are harmful, and many good things are not natural.",
+  answer:"\"Disease is natural too. Being natural doesn't make something right.\"",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"Miscarriages happen naturally all the time, so abortion is no big deal."},
+   {t:"slavery", who:"Ancient and 1800s defenders of slavery", q:"Some people are slaves by nature, so slavery is just the natural order."},
+   {t:"faith", who:"Skeptic", q:"Selfishness is natural, it's just survival of the fittest, so it can't be wrong."}
+  ], avoid:["tradition"]},
+ {id:"tradition", name:"Appeal to Tradition", aka:"It's always been this way",
+  def:"Arguing something is right because it has been done or believed for a long time.",
+  spot:"Age alone does not make an idea true or false.",
+  answer:"\"Plenty of old practices were wrong. What makes this one right?\"",
+  ex:[
+   {t:"slavery", who:"1850s defender of slavery", q:"Slavery has existed in every civilization since ancient times. It's how the world has always worked."},
+   {t:"abortion", who:"Pro-life argument", q:"Abortion was illegal for most of history, so it should be illegal now."},
+   {t:"faiths", who:"Member of any religion", q:"My family has followed this religion for a thousand years, so it must be true."}
+  ], avoid:["popularity","authority","nature"]},
+ {id:"goalposts", name:"Moving the Goalposts", aka:"Changing the standard",
+  def:"Changing what counts as proof once the original standard has been met.",
+  spot:"Write down what evidence was asked for. Was it given? Did the request suddenly change?",
+  answer:"\"You asked for X and I gave X. What would actually change your mind?\"",
+  ex:[
+   {t:"faith", who:"Skeptic", q:"\"Show me any source about Jesus outside the Bible.\" (Shown Tacitus and Josephus.) \"Those don't count. Show me one written while he was alive.\""},
+   {t:"faith", who:"Christian", q:"\"Show me a transitional fossil.\" (Shown one.) \"Fine, now show me the one between those two.\""},
+   {t:"abortion", who:"Either side", q:"\"I'll accept it's human if it has a heartbeat.\" (Shown a heartbeat.) \"Well, it also needs to feel pain.\""}
+  ], avoid:["special"]},
+ {id:"loaded", name:"Loaded Question", aka:"Trap question",
+  def:"Asking a question that sneaks in an assumption the other person does not accept.",
+  spot:"Any direct answer seems to admit something unfair.",
+  answer:"Name the hidden assumption: \"I don't accept that I hate women. Here's what I actually believe.\"",
+  ex:[
+   {t:"abortion", who:"Pro-choice argument", q:"Why do you hate women so much?"},
+   {t:"abortion", who:"Pro-life argument", q:"Why are you okay with killing babies?"},
+   {t:"faith", who:"Skeptic", q:"Have you stopped ignoring science yet?"}
+  ], avoid:["strawman","adhom"]},
+ {id:"scotsman", name:"No True Scotsman", aka:"Redefining the group",
+  def:"Protecting a claim about a group by declaring that anyone who doesn't fit was never really part of it.",
+  spot:"The definition changes only to exclude the awkward example.",
+  answer:"Be honest about the facts, then compare actions with what the belief actually teaches.",
+  ex:[
+   {t:"slavery", who:"Christian", q:"No true Christian ever owned slaves."},
+   {t:"abortion", who:"Pro-choice argument", q:"No real feminist could ever be pro-life."},
+   {t:"faiths", who:"Member of any religion", q:"Those violent people aren't real followers of my faith, because my faith is peaceful."}
+  ], note:"A stronger answer for Christians: many professing Christians did own slaves, and their actions went against what Scripture teaches about human dignity.",
+  avoid:["special","hasty"]},
+ {id:"special", name:"Special Pleading", aka:"Double standard",
+  def:"Applying a rule to others but making an exception for yourself or your side without a good reason.",
+  spot:"Would the speaker accept this same reasoning from the other side?",
+  answer:"\"If that rule applies to them, why not to you?\"",
+  ex:[
+   {t:"slavery", who:"1850s defender of slavery", q:"All men are created equal, except of course the people we enslave."},
+   {t:"faiths", who:"Christian", q:"Other religions' miracle stories are just legends, but ours should be accepted without checking."},
+   {t:"faith", who:"Skeptic", q:"I demand proof for every Christian claim, but my own beliefs don't need any evidence."}
+  ], avoid:["scotsman","goalposts"]},
+ {id:"ignorance", name:"Appeal to Ignorance", aka:"Nobody proved otherwise",
+  def:"Claiming something is true because it hasn't been proven false, or false because it hasn't been proven true.",
+  spot:"A lack of evidence is not the same as evidence.",
+  answer:"\"Not knowing isn't a reason. What positive evidence do we have?\"",
+  ex:[
+   {t:"faith", who:"Christian", q:"Nobody has ever proven God doesn't exist, so he must exist."},
+   {t:"faith", who:"Skeptic", q:"Nobody has ever proven God exists, so he doesn't."},
+   {t:"abortion", who:"Pro-choice argument", q:"Science can't prove the unborn has a soul, so it doesn't matter morally."}
+  ], avoid:["circular"]},
+ {id:"cherry", name:"Cherry Picking", aka:"Only the convenient facts",
+  def:"Pointing only to the evidence that helps your side and ignoring the evidence that doesn't.",
+  spot:"Ask what the full picture looks like, including evidence against.",
+  answer:"\"What about the evidence on the other side? Let's look at all of it.\"",
+  ex:[
+   {t:"slavery", who:"Christian", q:"Christians like Wilberforce led the fight to end slavery, so Christians have always been on the right side. (This leaves out Christian slaveholders.)"},
+   {t:"slavery", who:"Skeptic", q:"Ephesians 6:5 tells slaves to obey, so the Bible is pro-slavery. (This leaves out Exodus 21:16, Philemon, and Galatians 3:28.)"},
+   {t:"abortion", who:"Either side", q:"Quoting only the one study that supports your side and ignoring all the others."}
+  ], avoid:["hasty","redherring"]}
+];
+
+// ESV text. blank = one word used for fill-in-the-blank (must appear in text exactly once as a word).
+const VERSES = [
+ // How to debate: character and method
+ {id:"1pe3-15", ref:"1 Peter 3:15", t:"debate", theme:"Be ready to give a reason", blank:"defense",
+  text:"but in your hearts honor Christ the Lord as holy, always being prepared to make a defense to anyone who asks you for a reason for the hope that is in you; yet do it with gentleness and respect,",
+  note:"The word \"defense\" is apologia in Greek, where \"apologetics\" comes from. Notice the second half: gentleness and respect are part of the command."},
+ {id:"col4-6", ref:"Colossians 4:6", t:"debate", theme:"Speak with grace", blank:"salt",
+  text:"Let your speech always be gracious, seasoned with salt, so that you may know how you ought to answer each person.",
+  note:"\"Each person\" means tailoring your answer to who is in front of you, not giving a speech."},
+ {id:"2ti2-24", ref:"2 Timothy 2:24–25", t:"debate", theme:"Not quarrelsome", blank:"quarrelsome",
+  text:"And the Lord's servant must not be quarrelsome but kind to everyone, able to teach, patiently enduring evil, correcting his opponents with gentleness. God may perhaps grant them repentance leading to a knowledge of the truth,",
+  note:"The goal is to win the person, not just the argument."},
+ {id:"pr18-17", ref:"Proverbs 18:17", t:"debate", theme:"Hear both sides", blank:"examines",
+  text:"The one who states his case first seems right, until the other comes and examines him.",
+  note:"A one-line summary of why cross-examination exists. Always hear the other side before judging."},
+ {id:"pr18-13", ref:"Proverbs 18:13", t:"debate", theme:"Listen first", blank:"folly",
+  text:"If one gives an answer before he hears, it is his folly and shame.",
+  note:"Most straw men come from answering before really listening."},
+ {id:"jas1-19", ref:"James 1:19", t:"debate", theme:"Quick to hear", blank:"anger",
+  text:"Know this, my beloved brothers: let every person be quick to hear, slow to speak, slow to anger;",
+  note:"A good rule for every debate round and every family dinner."},
+ {id:"2co10-5", ref:"2 Corinthians 10:5", t:"debate", theme:"Take thoughts captive", blank:"captive",
+  text:"We destroy arguments and every lofty opinion raised against the knowledge of God, and take every thought captive to obey Christ,",
+  note:"Paul aims at arguments and ideas, not at people."},
+ {id:"1th5-21", ref:"1 Thessalonians 5:21", t:"debate", theme:"Test everything", blank:"test",
+  text:"but test everything; hold fast what is good.",
+  note:"Christians are told to check claims, including the ones we like."},
+ {id:"jude3", ref:"Jude 3", t:"debate", theme:"Contend for the faith", blank:"contend",
+  text:"Beloved, although I was very eager to write to you about our common salvation, I found it necessary to write appealing to you to contend for the faith that was once for all delivered to the saints.",
+  note:"\"Contend\" pictures an athlete working hard, not a person picking fights."},
+ // Faith and reason
+ {id:"ac17-11", ref:"Acts 17:11", t:"faith", theme:"Examine the evidence", blank:"examining",
+  text:"Now these Jews were more noble than those in Thessalonica; they received the word with all eagerness, examining the Scriptures daily to see if these things were so.",
+  note:"The Bereans were praised for checking Paul's claims."},
+ {id:"ro1-20", ref:"Romans 1:20", t:"faith", theme:"God seen in creation", blank:"perceived",
+  text:"For his invisible attributes, namely, his eternal power and divine nature, have been clearly perceived, ever since the creation of the world, in the things that have been made. So they are without excuse.",
+  note:"Background for arguments from design and from the beginning of the universe."},
+ {id:"ps19-1", ref:"Psalm 19:1", t:"faith", theme:"The heavens declare", blank:"handiwork",
+  text:"The heavens declare the glory of God, and the sky above proclaims his handiwork.",
+  note:"Pairs well with Romans 1:20."},
+ {id:"1co15-3", ref:"1 Corinthians 15:3–4", t:"faith", theme:"The earliest creed", blank:"buried",
+  text:"For I delivered to you as of first importance what I also received: that Christ died for our sins in accordance with the Scriptures, that he was buried, that he was raised on the third day in accordance with the Scriptures,",
+  note:"Many scholars, including skeptical ones, date this creed to within a few years of the crucifixion. Key for the historical case for the resurrection."},
+ {id:"1co15-14", ref:"1 Corinthians 15:14", t:"faith", theme:"If Christ is not raised", blank:"preaching",
+  text:"And if Christ has not been raised, then our preaching is in vain and your faith is in vain.",
+  note:"Christianity rests on a historical event that can be investigated. Paul invites the test."},
+ {id:"lk1-3", ref:"Luke 1:3–4", t:"faith", theme:"An orderly account", blank:"certainty",
+  text:"it seemed good to me also, having followed all things closely for some time past, to write an orderly account for you, most excellent Theophilus, that you may have certainty concerning the things you have been taught.",
+  note:"Luke writes as a careful historian, gathering sources."},
+ {id:"2pe1-16", ref:"2 Peter 1:16", t:"faith", theme:"Eyewitnesses, not myths", blank:"eyewitnesses",
+  text:"For we did not follow cleverly devised myths when we made known to you the power and coming of our Lord Jesus Christ, but we were eyewitnesses of his majesty.",
+  note:"Useful when someone says the gospels are just legends."},
+ {id:"heb11-1", ref:"Hebrews 11:1", t:"faith", theme:"What faith is", blank:"assurance",
+  text:"Now faith is the assurance of things hoped for, the conviction of things not seen.",
+  note:"Biblical faith is trust based on reasons, not belief without evidence."},
+ // Life: abortion
+ {id:"gn1-27", ref:"Genesis 1:27", t:"abortion", also:["slavery"], theme:"Image of God", blank:"female",
+  text:"So God created man in his own image, in the image of God he created him; male and female he created them.",
+  note:"The foundation for human dignity in both the abortion and the slavery debates. Every human has equal worth."},
+ {id:"gn9-6", ref:"Genesis 9:6", t:"abortion", theme:"Why killing is wrong", blank:"sheds",
+  text:"Whoever sheds the blood of man, by man shall his blood be shed, for God made man in his own image.",
+  note:"The reason given for the seriousness of killing is the image of God."},
+ {id:"ps139-13", ref:"Psalm 139:13–14", t:"abortion", theme:"Knit together in the womb", blank:"knitted",
+  text:"For you formed my inward parts; you knitted me together in my mother's womb. I praise you, for I am fearfully and wonderfully made. Wonderful are your works; my soul knows it very well.",
+  note:"David speaks of himself before birth as \"me.\" Poetry, but it shows God's care for life in the womb."},
+ {id:"jer1-5", ref:"Jeremiah 1:5", t:"abortion", theme:"Known before birth", blank:"consecrated",
+  text:"Before I formed you in the womb I knew you, and before you were born I consecrated you; I appointed you a prophet to the nations.",
+  note:"Spoken to Jeremiah about his calling. Use it carefully: it shows God knows people before birth, but it is not a direct statement about abortion."},
+ {id:"lk1-41", ref:"Luke 1:41", t:"abortion", theme:"The baby leaped", blank:"leaped",
+  text:"And when Elizabeth heard the greeting of Mary, the baby leaped in her womb. And Elizabeth was filled with the Holy Spirit,",
+  note:"Luke uses the same Greek word, brephos, for the unborn John here and for the newborn Jesus in Luke 2:12."},
+ {id:"ex20-13", ref:"Exodus 20:13", t:"abortion", theme:"The sixth commandment", blank:"murder",
+  text:"You shall not murder.",
+  note:"Remember the circular-reasoning card: you still need to argue that the unborn is a human being for this to apply."},
+ {id:"pr31-8", ref:"Proverbs 31:8–9", t:"abortion", also:["slavery"], theme:"Speak for the voiceless", blank:"mute",
+  text:"Open your mouth for the mute, for the rights of all who are destitute. Open your mouth, judge righteously, defend the rights of the poor and needy.",
+  note:"A call to defend those who can't defend themselves, whether unborn or enslaved."},
+ {id:"pr6-16", ref:"Proverbs 6:16–17", t:"abortion", theme:"Innocent blood", blank:"innocent",
+  text:"There are six things that the LORD hates, seven that are an abomination to him: haughty eyes, a lying tongue, and hands that shed innocent blood,",
+  note:"Notice pride and lying are on the same list. A good check on how we debate."},
+ {id:"ro8-1", ref:"Romans 8:1", t:"abortion", theme:"No condemnation", blank:"condemnation",
+  text:"There is therefore now no condemnation for those who are in Christ Jesus.",
+  note:"Some people you talk with will have had abortions. The pro-life message must include grace and forgiveness."},
+ // Justice: slavery
+ {id:"ex21-16", ref:"Exodus 21:16", t:"slavery", theme:"Kidnapping condemned", blank:"steals",
+  text:"Whoever steals a man and sells him, and anyone found in possession of him, shall be put to death.",
+  note:"The Atlantic slave trade was built on exactly this crime. Abolitionists quoted this verse often."},
+ {id:"dt23-15", ref:"Deuteronomy 23:15–16", t:"slavery", theme:"Shelter the escaped slave", blank:"escaped",
+  text:"You shall not give up to his master a slave who has escaped from his master to you. He shall dwell with you, in your midst, in the place that he shall choose within one of your towns, wherever it suits him. You shall not wrong him.",
+  note:"Compare the U.S. Fugitive Slave Act of 1850, which required returning escaped slaves. This law said the opposite."},
+ {id:"gal3-28", ref:"Galatians 3:28", t:"slavery", theme:"All one in Christ", blank:"free",
+  text:"There is neither Jew nor Greek, there is neither slave nor free, there is no male and female, for you are all one in Christ Jesus.",
+  note:"Equal standing before God, across every human division."},
+ {id:"phm16", ref:"Philemon 16", t:"slavery", theme:"More than a bondservant", blank:"brother",
+  text:"no longer as a bondservant but more than a bondservant, as a beloved brother—especially to me, but how much more to you, both in the flesh and in the Lord.",
+  note:"Paul asks Philemon to receive Onesimus back as a brother. Read the whole short letter."},
+ {id:"ac17-26", ref:"Acts 17:26", t:"slavery", theme:"One human family", blank:"nation",
+  text:"And he made from one man every nation of mankind to live on all the face of the earth, having determined allotted periods and the boundaries of their dwelling place,",
+  note:"There is one human race. This undercuts racial theories used to defend slavery."},
+ {id:"eph6-9", ref:"Ephesians 6:9", t:"slavery", theme:"A hard passage: masters", blank:"partiality",
+  text:"Masters, do the same to them, and stop your threatening, knowing that he who is both their Master and yours is in heaven, and that there is no partiality with him.",
+  note:"Critics point to Ephesians 6:5, which tells slaves to obey. Know this passage and verse 9 together, and be ready to discuss them honestly rather than avoid them."},
+ {id:"mic6-8", ref:"Micah 6:8", t:"slavery", also:["abortion"], theme:"Do justice", blank:"justice",
+  text:"He has told you, O man, what is good; and what does the LORD require of you but to do justice, and to love kindness, and to walk humbly with your God?",
+  note:"Justice, kindness, and humility, all three together."},
+ {id:"is1-17", ref:"Isaiah 1:17", t:"slavery", also:["abortion"], theme:"Correct oppression", blank:"oppression",
+  text:"learn to do good; seek justice, correct oppression; bring justice to the fatherless, plead the widow's cause.",
+  note:"God cares about the vulnerable, not just personal piety."},
+ // Other faiths: who is Jesus, who is God
+ {id:"jn14-6", ref:"John 14:6", t:"faiths", theme:"The way, the truth, the life", blank:"truth",
+  text:"Jesus said to him, \"I am the way, and the truth, and the life. No one comes to the Father except through me.\"",
+  note:"The core claim that makes Christianity different from \"all paths lead to God.\""},
+ {id:"ac4-12", ref:"Acts 4:12", t:"faiths", theme:"No other name", blank:"salvation",
+  text:"And there is salvation in no one else, for there is no other name under heaven given among men by which we must be saved.",
+  note:"Pairs with John 14:6."},
+ {id:"jn1-1", ref:"John 1:1", t:"faiths", theme:"The Word was God", blank:"beginning",
+  text:"In the beginning was the Word, and the Word was with God, and the Word was God.",
+  note:"Key in conversations with Jehovah's Witnesses and Muslims about who Jesus is."},
+ {id:"jn1-14", ref:"John 1:14", t:"faiths", theme:"The Word became flesh", blank:"flesh",
+  text:"And the Word became flesh and dwelt among us, and we have seen his glory, glory as of the only Son from the Father, full of grace and truth.",
+  note:"The incarnation: God became a real human."},
+ {id:"jn8-58", ref:"John 8:58", t:"faiths", theme:"Before Abraham was", blank:"Abraham",
+  text:"Jesus said to them, \"Truly, truly, I say to you, before Abraham was, I am.\"",
+  note:"Echoes God's name in Exodus 3:14. His listeners understood it as a claim to be God (see verse 59)."},
+ {id:"col2-9", ref:"Colossians 2:9", t:"faiths", theme:"Fullness of deity", blank:"deity",
+  text:"For in him the whole fullness of deity dwells bodily,",
+  note:"Jesus is fully God, not a lesser god or only a prophet."},
+ {id:"dt6-4", ref:"Deuteronomy 6:4", t:"faiths", theme:"The Shema", blank:"one",
+  text:"Hear, O Israel: The LORD our God, the LORD is one.",
+  note:"Christians, Jews, and Muslims all affirm one God. The Trinity is one God in three persons, not three gods."},
+ {id:"is44-6", ref:"Isaiah 44:6", t:"faiths", theme:"First and last", blank:"Redeemer",
+  text:"Thus says the LORD, the King of Israel and his Redeemer, the LORD of hosts: \"I am the first and I am the last; besides me there is no god.\"",
+  note:"Compare Revelation 1:17 and 22:13, where Jesus uses the same title."},
+ {id:"mt28-19", ref:"Matthew 28:19", t:"faiths", theme:"Father, Son, and Spirit", blank:"nations",
+  text:"Go therefore and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit,",
+  note:"One \"name\" (singular), three persons. A starting point for explaining the Trinity."},
+ {id:"eph2-8", ref:"Ephesians 2:8–9", t:"faiths", theme:"Saved by grace", blank:"gift",
+  text:"For by grace you have been saved through faith. And this is not your own doing; it is the gift of God, not a result of works, so that no one may boast.",
+  note:"Grace, not good works, is a major difference from most other religions."},
+ {id:"ro5-8", ref:"Romans 5:8", t:"faiths", theme:"While we were sinners", blank:"sinners",
+  text:"but God shows his love for us in that while we were still sinners, Christ died for us.",
+  note:"God moves toward us first."},
+ {id:"ro3-23", ref:"Romans 3:23", t:"faiths", theme:"All have sinned", blank:"glory",
+  text:"for all have sinned and fall short of the glory of God,",
+  note:"Everyone, including us, needs grace. Keeps debaters humble."}
+];
+
+/* ---------- CARDS ---------- */
+const CARDS = [
+  ...FALLACIES.map(f => ({id:"f:"+f.id, deck:"fallacy", topics:[...new Set(f.ex.map(e=>e.t))], f})),
+  ...VERSES.map(v => ({id:"v:"+v.id, deck:"verse", topics:[v.t, ...(v.also||[])], v}))
+];
+const byId = Object.fromEntries(CARDS.map(c=>[c.id,c]));
+
+/* ---------- STORAGE ---------- */
+const KEY = "aria-debate-deck-v1";
+const DAY = 86400000;
+const INTERVALS = [0,1,2,4,8,16]; // days for box 0..5
+const NEW_PER_SESSION = 6;
+function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && s.cards) return s; }catch(e){} return {cards:{}, prefs:{}, streak:{last:null,count:0}}; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+let S = load();
+const today0 = () => { const d=new Date(); d.setHours(0,0,0,0); return d.getTime(); };
+const dayKey = () => new Date(today0()).toISOString().slice(0,10);
+
+/* ---------- STATE ---------- */
+let deck = S.prefs.deck || "all", mode = S.prefs.mode || "flash", topic = S.prefs.topic || "all", lib = S.prefs.lib || "fallacy";
+let queue = [], qi = 0, done = 0, revealed = false, practice = false, current = null;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const pick = a => a[Math.floor(Math.random()*a.length)];
+
+function filtered(){ return CARDS.filter(c => (deck==="all"||c.deck===deck) && (topic==="all"||c.topics.includes(topic))); }
+function st(id){ return S.cards[id]; }
+
+function buildQueue(){
+  const now = Date.now(), pool = filtered();
+  const due = pool.filter(c => st(c.id) && st(c.id).due <= now).sort((a,b)=>st(a.id).box-st(b.id).box);
+  const fresh = shuffle(pool.filter(c => !st(c.id))).slice(0, NEW_PER_SESSION);
+  queue = shuffle([...due, ...fresh].map(c=>c.id));
+  practice = false; qi = 0; done = 0;
+}
+function buildPractice(){ queue = shuffle(filtered().map(c=>c.id)).slice(0,10); practice = true; qi = 0; done = 0; }
+
+function grade(id, result){ // result: "miss" | "shaky" | "knew"
+  const s = S.cards[id] || {box:0, due:0, right:0, wrong:0};
+  if(result==="miss"){ s.box = 0; s.due = Date.now(); s.wrong++; queue.push(id); }
+  else if(result==="shaky"){ s.box = Math.max(1, s.box); s.due = today0() + DAY; s.right++; }
+  else { s.box = Math.min(5, s.box+1); s.due = today0() + INTERVALS[s.box]*DAY; s.right++; }
+  S.cards[id] = s;
+  const k = dayKey();
+  if(S.streak.last !== k){
+    const y = new Date(today0()-DAY).toISOString().slice(0,10);
+    S.streak.count = (S.streak.last === y) ? S.streak.count+1 : 1;
+    S.streak.last = k;
+  }
+  save();
+}
+
+/* ---------- RENDER: controls ---------- */
+function renderControls(){
+  document.querySelectorAll("[data-deck]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.deck===deck));
+  document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.mode===mode));
+  document.querySelectorAll("[data-lib]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.lib===lib));
+  $("#topics").innerHTML = TOPICS.map(t=>`<button class="chip" id="tp-${t.id}" data-topic="${t.id}" aria-pressed="${t.id===topic}">${esc(t.name)}</button>`).join("");
+}
+function renderStats(){
+  const now = Date.now(), all = Object.entries(S.cards);
+  $("#sDue").textContent = all.filter(([,s])=>s.due<=now).length + Math.min(NEW_PER_SESSION, CARDS.filter(c=>!S.cards[c.id]).length);
+  $("#sLearn").textContent = all.filter(([,s])=>s.box<5).length;
+  $("#sMaster").textContent = all.filter(([,s])=>s.box>=5).length;
+  const y = new Date(today0()-DAY).toISOString().slice(0,10);
+  $("#sStreak").textContent = (S.streak.last===dayKey()||S.streak.last===y) ? S.streak.count : 0;
+}
+function topicName(id){ return (TOPICS.find(t=>t.id===id)||{}).name || id; }
+function boxTag(id){ const s=st(id); return s ? `<span class="tag box">Level ${s.box}/5</span>` : `<span class="tag box">New</span>`; }
+
+/* ---------- RENDER: study card ---------- */
+function renderCard(){
+  renderStats();
+  const total = queue.length;
+  $("#qinfo").textContent = practice ? "Extra practice (still counts toward your levels)" : (mode==="flash" ? "Flashcards: say the answer out loud, then flip" : "Quiz: pick the best answer");
+  $("#qcount").textContent = total ? `${Math.min(qi+1,total)} of ${total}` : "";
+  $("#qbar").style.width = total ? (qi/total*100)+"%" : "0%";
+  const el = $("#card");
+  if(qi >= queue.length){
+    const msg = queue.length ? `Session done: ${done} card${done===1?"":"s"} reviewed.` : "Nothing due right now in this selection.";
+    el.innerHTML = `<div class="card done"><h2>${msg}</h2><p class="note">Come back tomorrow for the next review. Or keep going with extra practice.</p>
+      <div class="actions" style="justify-content:center"><button class="btn primary" id="morePractice">Practice 10 more</button>
+      <button class="btn" id="restartDue">Check for due cards</button></div></div>`;
+    return;
+  }
+  const c = byId[queue[qi]]; revealed = false;
+  current = {c};
+  if(c.deck==="fallacy"){
+    const exs = c.f.ex.filter(e=>topic==="all"||e.t===topic);
+    current.ex = pick(exs.length?exs:c.f.ex);
+    current.dir = mode==="quiz" ? "ex2name" : pick(["name2def","ex2name"]);
+  } else {
+    current.dir = mode==="quiz" ? pick(["text2ref","blank"]) : "ref2text";
+  }
+  mode==="quiz" ? renderQuiz(el) : renderFlash(el);
+}
+
+function fallacyBack(f, ex){
+  return `<div class="back">
+    <div><div class="big">${esc(f.name)}</div><div class="speaker">${esc(f.aka)}</div></div>
+    <p>${esc(f.def)}</p>
+    <p class="note"><b>How to spot it:</b> ${esc(f.spot)}</p>
+    ${ex?`<div class="ex"><span class="speaker">${esc(ex.who)} · ${esc(topicName(ex.t))}</span><p>${esc(ex.q)}</p></div>`:""}
+    ${f.note?`<p class="note"><b>Note:</b> ${esc(f.note)}</p>`:""}
+    <div class="tip"><b>How to answer:</b> ${esc(f.answer)}</div>
+  </div>`;
+}
+function verseBack(v){
+  return `<div class="back"><p class="verse">${esc(v.text)}</p><p class="note"><b>${esc(v.ref)}</b> · ${esc(v.note)}</p></div>`;
+}
+function firstLetters(text){ return text.split(/\s+/).map(w=>{ const m=w.match(/^([^A-Za-z]*)([A-Za-z])[A-Za-z'’]*(.*)$/); return m? m[1]+m[2]+m[3] : w; }).join(" "); }
+
+function renderFlash(el){
+  const {c, dir, ex} = current;
+  let front;
+  if(c.deck==="fallacy"){
+    front = dir==="name2def"
+      ? `<p class="prompt">Explain this fallacy and give an example.</p><div class="big">${esc(c.f.name)}</div>`
+      : `<p class="prompt">Which fallacy is this?</p><div class="ex"><span class="speaker">${esc(ex.who)} · ${esc(topicName(ex.t))}</span><p class="quote">${esc(ex.q)}</p></div>`;
+  } else {
+    front = `<p class="prompt">Recite the verse.</p><div class="big">${esc(c.v.ref)}</div><p class="note">Theme: ${esc(c.v.theme)}</p>
+      <div id="hintArea"><button class="btn link" id="hintBtn">Show first-letter hint</button></div>`;
+  }
+  const cls = c.deck==="fallacy"?"fal":"ver";
+  el.innerHTML = `<div class="card ${cls}">
+    <div class="kind"><span class="tag ${cls}">${c.deck==="fallacy"?"Fallacy":"Scripture"}</span>${boxTag(c.id)}</div>
+    ${front}
+    <div id="backArea"></div>
+    <div class="actions" id="act"><button class="btn primary" id="flipBtn">Flip card</button></div>
+  </div>`;
+}
+function flip(){
+  const {c, ex} = current; revealed = true;
+  $("#backArea").innerHTML = c.deck==="fallacy" ? fallacyBack(c.f, ex) : verseBack(c.v);
+  $("#act").innerHTML = `<button class="btn miss" data-grade="miss">Missed it</button><button class="btn shaky" data-grade="shaky">Shaky</button><button class="btn knew" data-grade="knew">Knew it</button>`;
+}
+
+function distractFallacies(f){
+  const pool = FALLACIES.filter(x=>x.id!==f.id && !(f.avoid||[]).includes(x.id) && !(x.avoid||[]).includes(f.id));
+  return shuffle([f, ...shuffle(pool).slice(0,3)]);
+}
+function renderQuiz(el){
+  const {c, dir, ex} = current, cls = c.deck==="fallacy"?"fal":"ver";
+  let body, opts;
+  if(c.deck==="fallacy"){
+    body = `<p class="prompt">Which fallacy is this?</p><div class="ex"><span class="speaker">${esc(ex.who)} · ${esc(topicName(ex.t))}</span><p class="quote">${esc(ex.q)}</p></div>`;
+    opts = distractFallacies(c.f).map(x=>({label:x.name, ok:x.id===c.f.id}));
+  } else if(dir==="text2ref"){
+    body = `<p class="prompt">Where is this verse?</p><p class="verse">${esc(c.v.text)}</p>`;
+    const others = shuffle(VERSES.filter(v=>v.id!==c.v.id)).slice(0,3);
+    opts = shuffle([c.v,...others]).map(v=>({label:v.ref, ok:v.id===c.v.id}));
+  } else {
+    const re = new RegExp("\\b"+c.v.blank+"\\b");
+    const html = esc(c.v.text).replace(re, '<span class="blank">?</span>');
+    body = `<p class="prompt">Fill in the missing word. <b>${esc(c.v.ref)}</b></p><p class="verse">${html}</p>`;
+    const others = shuffle(VERSES.filter(v=>v.id!==c.v.id && v.blank.toLowerCase()!==c.v.blank.toLowerCase())).slice(0,3).map(v=>v.blank);
+    opts = shuffle([c.v.blank,...others]).map(w=>({label:w, ok:w===c.v.blank}));
+  }
+  current.opts = opts;
+  el.innerHTML = `<div class="card ${cls}">
+    <div class="kind"><span class="tag ${cls}">${c.deck==="fallacy"?"Fallacy":"Scripture"}</span>${boxTag(c.id)}</div>
+    ${body}
+    <div class="opts">${opts.map((o,i)=>`<button class="opt" data-opt="${i}">${esc(o.label)}</button>`).join("")}</div>
+    <div id="backArea"></div>
+    <div class="actions" id="act"></div>
+  </div>`;
+}
+function answer(i){
+  const {c, ex, opts} = current, ok = opts[i].ok;
+  document.querySelectorAll(".opt").forEach((b,j)=>{ b.disabled = true; if(opts[j].ok) b.classList.add("right"); else if(j===i) b.classList.add("wrong"); });
+  grade(c.id, ok ? "knew" : "miss");
+  $("#backArea").innerHTML = `<p class="verdict ${ok?"ok":"no"}">${ok?"Correct.":"Not quite. This one will come back later in the session."}</p>` +
+    (c.deck==="fallacy" ? fallacyBack(c.f, null) : verseBack(c.v));
+  $("#act").innerHTML = `<button class="btn primary" id="nextBtn">Next card</button>`;
+  done++; renderStats(); renderLibrary();
+}
+function next(){ qi++; renderCard(); }
+
+/* ---------- RENDER: library ---------- */
+function dots(id){ const b = st(id)?.box||0; return `<span class="dots" aria-label="Level ${b} of 5">${[1,2,3,4,5].map(n=>`<i class="${n<=b?"on":""}"></i>`).join("")}</span>`; }
+function renderLibrary(){
+  const el = $("#library");
+  if(lib==="fallacy"){
+    el.innerHTML = FALLACIES.map(f=>`<details><summary><span class="nm">${esc(f.name)}<small>${esc(f.def)}</small></span>${dots("f:"+f.id)}</summary>
+      <div class="detail"><p class="note"><b>How to spot it:</b> ${esc(f.spot)}</p>
+      ${f.ex.map(e=>`<div class="ex"><span class="speaker">${esc(e.who)} · ${esc(topicName(e.t))}</span><p>${esc(e.q)}</p></div>`).join("")}
+      ${f.note?`<p class="note"><b>Note:</b> ${esc(f.note)}</p>`:""}
+      <div class="tip"><b>How to answer:</b> ${esc(f.answer)}</div></div></details>`).join("");
+  } else {
+    el.innerHTML = TOPICS.filter(t=>t.id!=="all").map(t=>{
+      const vs = VERSES.filter(v=>v.t===t.id); if(!vs.length) return "";
+      return `<div class="group">${esc(t.name)}</div>` + vs.map(v=>`<details><summary><span class="nm">${esc(v.ref)}<small>${esc(v.theme)}</small></span>${dots("v:"+v.id)}</summary>
+        <div class="detail"><p class="verse">${esc(v.text)}</p><p class="note">${esc(v.note)}</p></div></details>`).join("");
+    }).join("");
+  }
+}
+
+/* ---------- EVENTS ---------- */
+function setPref(k,v){ S.prefs[k]=v; save(); }
+document.addEventListener("click", e=>{
+  const t = e.target.closest("button"); if(!t) return;
+  if(t.dataset.deck){ deck=t.dataset.deck; setPref("deck",deck); renderControls(); buildQueue(); renderCard(); }
+  else if(t.dataset.mode){ mode=t.dataset.mode; setPref("mode",mode); renderControls(); renderCard(); }
+  else if(t.dataset.topic){ topic=t.dataset.topic; setPref("topic",topic); renderControls(); buildQueue(); renderCard(); }
+  else if(t.dataset.lib){ lib=t.dataset.lib; setPref("lib",lib); renderControls(); renderLibrary(); }
+  else if(t.dataset.grade){ grade(current.c.id, t.dataset.grade); done++; renderLibrary(); next(); }
+  else if(t.dataset.opt){ answer(+t.dataset.opt); }
+  else if(t.id==="flipBtn") flip();
+  else if(t.id==="nextBtn") next();
+  else if(t.id==="hintBtn") $("#hintArea").innerHTML = `<p class="hint">${esc(firstLetters(current.c.v.text))}</p>`;
+  else if(t.id==="morePractice"){ buildPractice(); renderCard(); }
+  else if(t.id==="restartDue"){ buildQueue(); renderCard(); }
+  else if(t.id==="resetBtn") $("#resetBox").innerHTML = `<span class="confirm">Erase all levels and your streak? <button class="btn miss" id="resetYes">Erase progress</button><button class="btn" id="resetNo">Keep it</button></span>`;
+  else if(t.id==="resetYes"){ S={cards:{},prefs:S.prefs,streak:{last:null,count:0}}; save(); $("#resetBox").innerHTML=`<button class="btn link" id="resetBtn">Reset all progress</button>`; buildQueue(); renderCard(); renderLibrary(); }
+  else if(t.id==="resetNo") $("#resetBox").innerHTML = `<button class="btn link" id="resetBtn">Reset all progress</button>`;
+});
+document.addEventListener("keydown", e=>{
+  if(e.target.closest("input,textarea")) return;
+  if(e.key===" " && $("#flipBtn")){ e.preventDefault(); flip(); }
+  else if(revealed && mode==="flash" && ["1","2","3"].includes(e.key)){ document.querySelector(`[data-grade="${["miss","shaky","knew"][+e.key-1]}"]`)?.click(); }
+  else if(e.key==="Enter" && $("#nextBtn")){ e.preventDefault(); next(); }
+});
+
+/* ---------- START ---------- */
+$("#lb-fal").textContent = FALLACIES.length + " fallacies";
+$("#lb-ver").textContent = VERSES.length + " verses";
+renderControls(); buildQueue(); renderCard(); renderLibrary();
+</script>
+
+</body>
+</html>
